@@ -1,5 +1,6 @@
 package com.cdhi.projectivbackend.services;
 
+import com.cdhi.projectivbackend.domain.Post;
 import com.cdhi.projectivbackend.domain.User;
 import com.cdhi.projectivbackend.domain.enums.Avatar;
 import com.cdhi.projectivbackend.domain.enums.Profile;
@@ -124,5 +125,18 @@ public class UserService {
             return repo.findById(id).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + id));
         }
         throw new ObjectNotFoundException("Chave não encontrada, verifique seu email");
+    }
+
+    @Transactional
+    public User addPost(Post post, User user) {
+        user.getPosts().add(post);
+        return repo.save(user);
+    }
+
+    @Transactional
+    public User addPost(Post post, Integer userId) {
+        User user = findOne(userId);
+        user.getPosts().add(post);
+        return repo.save(user);
     }
 }

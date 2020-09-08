@@ -23,6 +23,9 @@ public class User implements Serializable {
 
     private Date created;
 
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "PROFILES")
     private Set<Integer> profiles = new HashSet<>();
@@ -72,6 +75,14 @@ public class User implements Serializable {
                         .toString()
         );
         this.created = new Date(System.currentTimeMillis() - 10800000);
+    }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
     }
 
     public Integer getId() {
