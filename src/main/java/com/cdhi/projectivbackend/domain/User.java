@@ -14,7 +14,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name="_name")
+    @Column(name = "_name")
     private String name;
     @Column(unique = true)
     private String email;
@@ -23,6 +23,7 @@ public class User implements Serializable {
 
     private Date created;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts;
 
