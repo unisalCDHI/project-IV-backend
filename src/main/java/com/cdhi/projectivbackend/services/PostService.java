@@ -19,13 +19,17 @@ public class PostService {
     @Autowired
     UserService userService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public Post createPost(NewPostDTO newPostDTO) {
-        User user = userService.findOne(newPostDTO.getUserId());
+        User user = userService.getWebRequestUser();
 
         Post post = new Post();
         post.setOwner(user);
         post.setBody(newPostDTO.getBody());
         post.setTitle(newPostDTO.getTitle());
+        post.setImage(newPostDTO.getImage());
 
         Post savedPost = repo.save(post);
         userService.addPost(savedPost, user);
@@ -36,5 +40,27 @@ public class PostService {
         Post post = repo.findById(id).orElseThrow(() ->
                 new ObjectNotFoundException("Não foi encontrado o post com id: " + id));
         return new PostDTO(post);
+    }
+
+    public Post likePost(Integer postId) {
+        try {
+            User user = userService.getWebRequestUser();
+            Post post = repo.findById(postId).orElseThrow(() ->
+                    new ObjectNotFoundException("Não foi encontrado o post com id: " + postId));
+
+            if (post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())) &&
+                    user.getPosts().stream().anyMatch(p -> p.getId().equals(postId))) {
+                post.getUsersLikes().removeIf(u -> u.getId().equals(user.getId()));
+                user.getPostsLiked().removeIf(p -> p.getId().equals(post.getId()));
+            } else {
+                post.getUsersLikes().add(user);
+                user.getPostsLiked().add(post);
+            }
+            userRepository.save(user);
+            return repo.save(post);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

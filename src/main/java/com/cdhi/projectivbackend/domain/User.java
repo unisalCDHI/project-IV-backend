@@ -39,6 +39,10 @@ public class User implements Serializable {
     @JsonIgnore
     private String password;
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "usersLikes", cascade = CascadeType.DETACH)
+    private Set<Post> postsLiked;
+
     public User() {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'
@@ -100,6 +104,14 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<Post> getPostsLiked() {
+        return postsLiked;
+    }
+
+    public void setPostsLiked(Set<Post> postsLiked) {
+        this.postsLiked = postsLiked;
     }
 
     public List<String> get_key() {

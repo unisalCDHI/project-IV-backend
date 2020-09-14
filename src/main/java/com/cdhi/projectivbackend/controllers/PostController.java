@@ -38,5 +38,9 @@ public class PostController {
         return ResponseEntity.created(uri).build();
     }
 
-
+    @ApiOperation(value = "Like Post by id")
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Post> likePost(@PathVariable Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.likePost(id));
+    }
 }

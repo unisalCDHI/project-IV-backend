@@ -43,6 +43,14 @@ public class UserService {
         }
     }
 
+    public User getWebRequestUser() {
+        UserSS user = UserService.authenticated();
+        if (user == null) {
+            throw new AuthorizationException("Erro, usuário nulo no cabeçalho da requisição");
+        }
+        return repo.findById(user.getId()).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + user.getId()));
+    }
+
     @Transactional
     public User findOne(Integer id) {
         UserSS user = UserService.authenticated();
@@ -115,7 +123,7 @@ public class UserService {
         User user = repo.findById(id).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + id));
         String userKey = "DO_NOT_FOUND_ANY_KEY";
 
-        for (String key : user.get_key()){
+        for (String key : user.get_key()) {
             userKey = key;
         }
         if (userKey.equals(_key)) {

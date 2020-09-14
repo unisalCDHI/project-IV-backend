@@ -18,6 +18,8 @@ public class NewPostDTO {
     @Length(min = 0, max=500, message = "O texto deve ter pelo menos 1 caracter (max.:500)")
     private String body;
 
-    @NotNull(message = "'userId' não pode ser nulo")
-    private Integer userId;
+//    @NotNull(message = "'userId' não pode ser nulo")
+//    private Integer userId;
+
+    private String image;
 }
