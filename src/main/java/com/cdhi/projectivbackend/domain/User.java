@@ -14,6 +14,10 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(unique=true)
+    private String username;
+
     @Column(name = "_name")
     private String name;
     @Column(unique = true)
@@ -84,6 +88,14 @@ public class User implements Serializable {
 
     public List<Post> getPosts() {
         return posts;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setPosts(List<Post> posts) {

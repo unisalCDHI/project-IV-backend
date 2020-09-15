@@ -14,6 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 @Api(value = "Post Controller")
 @RestController
@@ -29,6 +30,12 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(service.findOne(id));
     }
 
+    @ApiOperation(value = "Get Commentaries by Post id")
+    @GetMapping(value = "/{id}/commentaries")
+    public ResponseEntity<List<PostDTO>> getCommentariesByPostId(@PathVariable Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.findCommentariesFrom(id));
+    }
+
     @ApiOperation(value = "Create Post")
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Valid NewPostDTO newPostDTO) {
@@ -38,9 +45,18 @@ public class PostController {
         return ResponseEntity.created(uri).build();
     }
 
+    @ApiOperation(value = "Create Commentary")
+    @PostMapping(value = "{id}")
+    public ResponseEntity<?> create(@RequestBody @Valid NewPostDTO newCommentaryDTO, @PathVariable Integer id) {
+        Post p = service.createCommentary(newCommentaryDTO, id);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}").buildAndExpand(p.getId()).toUri();
+        return ResponseEntity.created(uri).build();
+    }
+
     @ApiOperation(value = "Like Post by id")
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Post> likePost(@PathVariable Integer id) {
+    public ResponseEntity<PostDTO> likePost(@PathVariable Integer id) {
         return ResponseEntity.status(HttpStatus.OK).body(service.likePost(id));
     }
 }

@@ -70,10 +70,14 @@ public class UserService {
         newUserDTO.setId(null);
         if (repo.findByEmail(newUserDTO.getEmail()) != null)
             throw new ObjectAlreadyExistsException("Este email já está sendo usado");
+        else if (repo.findByUsername(newUserDTO.getUsername()) != null)
+            throw new ObjectAlreadyExistsException("Este nome de usuário já está sendo usado");
         else {
             newUserDTO.setPassword(CRYPTER.encode(newUserDTO.getPassword()));
             User userToCreate = toObject(newUserDTO);
+            userToCreate.setUsername(newUserDTO.getUsername());
             userToCreate.setAvatar(Avatar.A0);
+
             User user = repo.save(userToCreate);
             emailService.sendUserConfirmationHtmlEmail(user);
             return user;
@@ -93,7 +97,8 @@ public class UserService {
         User userToUpdate = findOne(userId);
         userToUpdate
                 .setName(userDTO.getName());
-        userToUpdate.setAvatar(userDTO.getAvatar());
+//        userToUpdate.setUsername(userDTO.getUsername());
+//        userToUpdate.setAvatar(userDTO.getAvatar());
         repo.save(userToUpdate);
         return findOne(userId);
     }

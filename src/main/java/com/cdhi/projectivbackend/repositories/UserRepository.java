@@ -19,6 +19,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findByEmail(String email);
 
     @Transactional(readOnly=true)
+    User findByUsername(String username);
+
+    @Transactional(readOnly=true)
     List<User> findDistinctByNameContainingIgnoreCase(String name);
 
     @Transactional(readOnly = true)

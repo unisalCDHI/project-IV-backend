@@ -23,6 +23,11 @@ public class NewUserDTO implements Serializable {
     @NotEmpty(message = "'Nome' é obrigatório")
     private String name;
 
+    @Length(min = 1, max = 60, message = "Nome de usuário deve ter entre 1 e 60 caracteres")
+    @NotNull(message = "'Nome de usuário' não pode ser nulo")
+    @NotEmpty(message = "'Nome de usuário' é obrigatório")
+    private String username;
+
     @Length(min = 1, max = 100, message = "Email deve ter entre 1 e 100 caracteres")
     @NotNull(message = "'Email' não pode ser nulo")
     @NotEmpty(message = "'Email' é obrigatório")
