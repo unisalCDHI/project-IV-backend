@@ -5,10 +5,9 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Entity(name = "POST")
 @Data
@@ -28,6 +27,8 @@ public class Post implements Serializable {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
+
+    private LocalDateTime createdDate = LocalDateTime.now();
 
     @ManyToMany
     @JoinTable(name = "USER_LIKES", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "post_id"))

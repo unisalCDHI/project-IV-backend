@@ -40,7 +40,6 @@ public class PostService {
         return savedPost;
     }
 
-    //TODO
     public Post createCommentary(NewPostDTO newCommentaryDTO, Integer postId) {
         User user = userService.getWebRequestUser();
         Post parentPost = repo.findById(postId).orElseThrow(() ->
@@ -52,7 +51,6 @@ public class PostService {
         commentary.setTitle(newCommentaryDTO.getTitle());
         commentary.setImage(newCommentaryDTO.getImage());
         commentary.setCommentary(true);
-
 
         parentPost.getCommentaries().add(commentary);
         commentary.setParentPost(parentPost);

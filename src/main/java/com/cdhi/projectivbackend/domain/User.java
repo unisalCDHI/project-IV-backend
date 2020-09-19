@@ -47,6 +47,15 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "usersLikes", cascade = CascadeType.DETACH)
     private Set<Post> postsLiked;
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "followers", cascade = CascadeType.DETACH)
+    private List<User> followingUsers = new ArrayList<>();
+
+    @JsonIgnore
+    @ManyToMany(cascade=CascadeType.DETACH)
+    @JoinTable(name = "USER_FOLLOWS", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "follow_user_id"))
+    private List<User> followers = new ArrayList<>();
+
     public User() {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'
@@ -176,6 +185,22 @@ public class User implements Serializable {
 
     public void setAvatar(Avatar avatar) {
         this.avatar = avatar;
+    }
+
+    public List<User> getFollowingUsers() {
+        return followingUsers;
+    }
+
+    public void setFollowingUsers(List<User> followingUsers) {
+        this.followingUsers = followingUsers;
+    }
+
+    public List<User> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(List<User> followers) {
+        this.followers = followers;
     }
 
     @Override

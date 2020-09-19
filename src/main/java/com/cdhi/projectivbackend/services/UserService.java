@@ -152,4 +152,30 @@ public class UserService {
         user.getPosts().add(post);
         return repo.save(user);
     }
+
+    @Transactional
+    public User followUser(Integer userId) {
+        User user = getWebRequestUser();
+        User followingUser = repo.findById(userId).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + userId));;
+
+        if(!followingUser.getEnabled())
+            throw new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + userId);
+
+        if (user.getFollowingUsers().stream().anyMatch(f -> f.getId().equals(userId)))
+            throw new ObjectAlreadyExistsException("Você já segue este usuário");
+
+        user.getFollowingUsers().add(followingUser);
+        followingUser.getFollowers().add(user);
+
+        repo.save(followingUser);
+        return repo.save(user);
+    }
+
+    public List<UserDTO> findAllFollowingUsers() {
+        return getWebRequestUser().getFollowingUsers().stream().map(UserDTO::new).collect(Collectors.toList());
+    }
+
+    public List<UserDTO> findAllFollowers() {
+        return getWebRequestUser().getFollowers().stream().map(UserDTO::new).collect(Collectors.toList());
+    }
 }
