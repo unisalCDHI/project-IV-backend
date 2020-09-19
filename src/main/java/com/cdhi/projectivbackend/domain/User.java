@@ -14,7 +14,11 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name="_name")
+
+    @Column(unique=true)
+    private String username;
+
+    @Column(name = "_name")
     private String name;
     @Column(unique = true)
     private String email;
@@ -22,6 +26,10 @@ public class User implements Serializable {
     private Avatar avatar;
 
     private Date created;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "PROFILES")
@@ -34,6 +42,19 @@ public class User implements Serializable {
 
     @JsonIgnore
     private String password;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "usersLikes", cascade = CascadeType.DETACH)
+    private Set<Post> postsLiked;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "followers", cascade = CascadeType.DETACH)
+    private List<User> followingUsers = new ArrayList<>();
+
+    @JsonIgnore
+    @ManyToMany(cascade=CascadeType.DETACH)
+    @JoinTable(name = "USER_FOLLOWS", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "follow_user_id"))
+    private List<User> followers = new ArrayList<>();
 
     public User() {
         int leftLimit = 48; // numeral '0'
@@ -74,6 +95,22 @@ public class User implements Serializable {
         this.created = new Date(System.currentTimeMillis() - 10800000);
     }
 
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -88,6 +125,14 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<Post> getPostsLiked() {
+        return postsLiked;
+    }
+
+    public void setPostsLiked(Set<Post> postsLiked) {
+        this.postsLiked = postsLiked;
     }
 
     public List<String> get_key() {
@@ -140,6 +185,22 @@ public class User implements Serializable {
 
     public void setAvatar(Avatar avatar) {
         this.avatar = avatar;
+    }
+
+    public List<User> getFollowingUsers() {
+        return followingUsers;
+    }
+
+    public void setFollowingUsers(List<User> followingUsers) {
+        this.followingUsers = followingUsers;
+    }
+
+    public List<User> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(List<User> followers) {
+        this.followers = followers;
     }
 
     @Override

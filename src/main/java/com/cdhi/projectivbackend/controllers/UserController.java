@@ -40,6 +40,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(service.findAll(name));
     }
 
+    @ApiOperation(value = "Get Following Users")
+    @GetMapping(value = "/following")
+    public ResponseEntity<List<UserDTO>> findAllFollowingUsers() {
+        return ResponseEntity.status(HttpStatus.OK).body(service.findAllFollowingUsers());
+    }
+
+    @ApiOperation(value = "Get Followers")
+    @GetMapping(value = "/followers")
+    public ResponseEntity<List<UserDTO>> findAllFollowers() {
+        return ResponseEntity.status(HttpStatus.OK).body(service.findAllFollowers());
+    }
+
+
     @ApiOperation(value = "Create User")
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Valid NewUserDTO newUserDTO) {
@@ -53,6 +66,12 @@ public class UserController {
     @PutMapping(value = "{id}")
     public ResponseEntity<?> save(@RequestBody @Valid UserDTO userDTO, @PathVariable("id") Integer id) {
         return ResponseEntity.status(HttpStatus.OK).body(service.save(userDTO, id));
+    }
+
+    @ApiOperation(value = "Follow user")
+    @PutMapping(value = "/follow/{id}")
+    public ResponseEntity<User> follow(@PathVariable("id") Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.followUser(id));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
