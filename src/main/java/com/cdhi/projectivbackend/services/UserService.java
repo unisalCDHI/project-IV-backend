@@ -161,11 +161,14 @@ public class UserService {
         if(!followingUser.getEnabled())
             throw new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + userId);
 
-        if (user.getFollowingUsers().stream().anyMatch(f -> f.getId().equals(userId)))
-            throw new ObjectAlreadyExistsException("Você já segue este usuário");
-
-        user.getFollowingUsers().add(followingUser);
-        followingUser.getFollowers().add(user);
+        if (user.getFollowingUsers().stream().anyMatch(f -> f.getId().equals(followingUser.getId())) &&
+                followingUser.getFollowers().stream().anyMatch(f -> f.getId().equals(user.getId()))) {
+            user.getFollowingUsers().removeIf(f -> f.getId().equals(followingUser.getId()));
+            followingUser.getFollowers().removeIf(p -> p.getId().equals(user.getId()));
+        } else {
+            user.getFollowingUsers().add(followingUser);
+            followingUser.getFollowers().add(user);
+        }
 
         repo.save(followingUser);
         return repo.save(user);
