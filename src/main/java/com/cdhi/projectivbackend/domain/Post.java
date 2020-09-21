@@ -16,8 +16,6 @@ public class Post implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String title;
-
     @Column(columnDefinition = "TEXT")
     private String image;
 

@@ -3,6 +3,7 @@ package com.cdhi.projectivbackend.dtos;
 import com.cdhi.projectivbackend.domain.Post;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,7 +11,6 @@ import java.util.stream.Collectors;
 public class PostDTO {
 
     private Integer id;
-    private String title;
     private String body;
     private UserDTO owner;
     private boolean commentary;
@@ -18,10 +18,11 @@ public class PostDTO {
     private List<UserDTO> likes;
     private Long totalLikes;
     private Long totalCommentaries;
+    private LocalDateTime createdData;
+    private boolean liked;
 
-    public PostDTO(Post post) {
+    public PostDTO(Post post, boolean liked) {
         this.id = post.getId();
-        this.title = post.getTitle();
         this.body = post.getBody();
         this.owner = new UserDTO(post.getOwner());
         this.commentary = post.isCommentary();
@@ -29,5 +30,7 @@ public class PostDTO {
         this.likes = post.getUsersLikes().stream().map(UserDTO::new).collect(Collectors.toList());
         this.totalLikes = (long) post.getUsersLikes().size();
         this.totalCommentaries = (long) post.getCommentaries().size();
+        this.createdData = post.getCreatedDate();
+        this.liked = liked;
     }
 }

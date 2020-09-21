@@ -59,4 +59,10 @@ public class PostController {
     public ResponseEntity<PostDTO> likePost(@PathVariable Integer id) {
         return ResponseEntity.status(HttpStatus.OK).body(service.likePost(id));
     }
+
+    @ApiOperation(value = "Get Posts")
+    @GetMapping
+    public ResponseEntity<List<PostDTO>> getPosts() {
+        return ResponseEntity.status(HttpStatus.OK).body(service.findAll());
+    }
 }

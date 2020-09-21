@@ -10,6 +10,7 @@ import com.cdhi.projectivbackend.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,6 @@ public class PostService {
         Post post = new Post();
         post.setOwner(user);
         post.setBody(newPostDTO.getBody());
-        post.setTitle(newPostDTO.getTitle());
         post.setImage(newPostDTO.getImage());
         post.setCommentary(false);
 
@@ -48,7 +48,6 @@ public class PostService {
         Post commentary = new Post();
         commentary.setOwner(user);
         commentary.setBody(newCommentaryDTO.getBody());
-        commentary.setTitle(newCommentaryDTO.getTitle());
         commentary.setImage(newCommentaryDTO.getImage());
         commentary.setCommentary(true);
 
@@ -63,9 +62,10 @@ public class PostService {
     }
 
     public PostDTO findOne(Integer id) {
+        User user = userService.getWebRequestUser();
         Post post = repo.findById(id).orElseThrow(() ->
                 new ObjectNotFoundException("Não foi encontrado o post com id: " + id));
-        return new PostDTO(post);
+        return new PostDTO(post, post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())));
     }
 
     public PostDTO likePost(Integer postId) {
@@ -83,7 +83,7 @@ public class PostService {
                 user.getPostsLiked().add(post);
             }
             userRepository.save(user);
-            return new PostDTO(repo.save(post));
+            return new PostDTO(repo.save(post), post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -91,8 +91,27 @@ public class PostService {
     }
 
     public List<PostDTO> findCommentariesFrom(Integer id) {
+        User user = userService.getWebRequestUser();
         Post post = repo.findById(id).orElseThrow(() ->
                 new ObjectNotFoundException("Não foi encontrado o post com id: " + id));
-        return post.getCommentaries().stream().map(PostDTO::new).collect(Collectors.toList());
+        return post.getCommentaries().stream().map(p -> new PostDTO(post, post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())))).collect(Collectors.toList());
+    }
+
+    public List<PostDTO> findAll() {
+        User user = userService.getWebRequestUser();
+        List<Post> userPosts = repo.findAllByOwner_id(user.getId());
+        List<Post> followingUsersPosts = new ArrayList<>();
+
+        for (User u : user.getFollowingUsers()) {
+            followingUsersPosts.addAll(repo.findAllByOwner_id(u.getId()));
+        }
+
+        List<Post> posts = new ArrayList<>();
+        posts.addAll(userPosts);
+        posts.addAll(followingUsersPosts);
+
+        return posts.stream().map(p -> new PostDTO(p, p.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId()))))
+                .sorted((p1, p2) -> p1.getCreatedData().isAfter(p2.getCreatedData()) ? -1 : p1.getCreatedData().isAfter(p2.getCreatedData()) ? 1 : 0)
+                .collect(Collectors.toList());
     }
 }
