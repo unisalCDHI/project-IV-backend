@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,7 +66,8 @@ public class PostService {
         User user = userService.getWebRequestUser();
         Post post = repo.findById(id).orElseThrow(() ->
                 new ObjectNotFoundException("Não foi encontrado o post com id: " + id));
-        return new PostDTO(post, post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())));
+        return new PostDTO(post, post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())),
+                post.getUsersReposts().stream().anyMatch(u -> u.getId().equals(user.getId())));
     }
 
     public PostDTO likePost(Integer postId) {
@@ -83,7 +85,8 @@ public class PostService {
                 user.getPostsLiked().add(post);
             }
             userRepository.save(user);
-            return new PostDTO(repo.save(post), post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())));
+            return new PostDTO(repo.save(post), post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())),
+                    post.getUsersReposts().stream().anyMatch(u -> u.getId().equals(user.getId())));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -94,24 +97,61 @@ public class PostService {
         User user = userService.getWebRequestUser();
         Post post = repo.findById(id).orElseThrow(() ->
                 new ObjectNotFoundException("Não foi encontrado o post com id: " + id));
-        return post.getCommentaries().stream().map(p -> new PostDTO(post, post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())))).collect(Collectors.toList());
+        return post.getCommentaries().stream().map(comment -> new PostDTO(comment, comment.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())),
+                comment.getUsersReposts().stream().anyMatch(u -> u.getId().equals(user.getId())))).collect(Collectors.toList());
     }
 
     public List<PostDTO> findAll() {
         User user = userService.getWebRequestUser();
         List<Post> userPosts = repo.findAllByOwner_id(user.getId());
         List<Post> followingUsersPosts = new ArrayList<>();
+        List<Post> repostsByFollowings = new ArrayList<>();
 
         for (User u : user.getFollowingUsers()) {
             followingUsersPosts.addAll(repo.findAllByOwner_id(u.getId()));
+            repostsByFollowings.addAll(u.getReposts());
         }
 
         List<Post> posts = new ArrayList<>();
         posts.addAll(userPosts);
         posts.addAll(followingUsersPosts);
 
-        return posts.stream().map(p -> new PostDTO(p, p.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId()))))
-                .sorted((p1, p2) -> p1.getCreatedData().isAfter(p2.getCreatedData()) ? -1 : p1.getCreatedData().isAfter(p2.getCreatedData()) ? 1 : 0)
+        for (Post p : repostsByFollowings) {
+            posts.removeIf(post -> post.getId().equals(p.getId()));
+        }
+
+        posts.addAll(repostsByFollowings);
+
+        return posts.stream().map(p ->
+                new PostDTO(
+                        p,
+                        p.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())),
+                        p.getUsersReposts().stream().anyMatch(u -> u.getId().equals(user.getId()))
+                ))
+                .sorted((p1, p2) ->
+                        p1.getCreatedData().isAfter(p2.getCreatedData()) ? -1 :
+                                p1.getCreatedData().isAfter(p2.getCreatedData()) ? 1 : 0)
                 .collect(Collectors.toList());
     }
+
+    public void repost(Integer postId) {
+        User user = userService.getWebRequestUser();
+        Post post = repo.findById(postId).orElseThrow(() ->
+                new ObjectNotFoundException("Não foi encontrado o post com id: " + postId));
+
+        post.getUsersReposts().add(user);
+        user.getReposts().add(post);
+
+        userRepository.save(user);
+        repo.save(post);
+    }
+
+    public List<PostDTO> getReposts() {
+        User user = userService.getWebRequestUser();
+        Set<Post> posts = user.getReposts();
+        return posts.stream()
+                .map(post -> new PostDTO(post, post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())), true))
+                .collect(Collectors.toList());
+    }
+
 }

@@ -65,4 +65,17 @@ public class PostController {
     public ResponseEntity<List<PostDTO>> getPosts() {
         return ResponseEntity.status(HttpStatus.OK).body(service.findAll());
     }
+
+    @ApiOperation(value = "Repost")
+    @PutMapping(value = "repost/{id}")
+    public ResponseEntity<?> repost(@PathVariable Integer id) {
+        service.repost(id);
+        return ResponseEntity.status(HttpStatus.OK).body(true);
+    }
+
+    @ApiOperation(value = "Get reposts")
+    @GetMapping(value = "repost")
+    public ResponseEntity<List<?>> getReposts() {
+        return ResponseEntity.status(HttpStatus.OK).body( service.getReposts());
+    }
 }

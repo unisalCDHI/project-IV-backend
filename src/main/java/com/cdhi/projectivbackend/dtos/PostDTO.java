@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -20,8 +21,11 @@ public class PostDTO {
     private Long totalCommentaries;
     private LocalDateTime createdData;
     private boolean liked;
+    private boolean repostedByMe;
+    private Set<UserDTO> usersRepostList;
 
-    public PostDTO(Post post, boolean liked) {
+
+    public PostDTO(Post post, boolean liked, boolean reposted) {
         this.id = post.getId();
         this.body = post.getBody();
         this.owner = new UserDTO(post.getOwner());
@@ -31,6 +35,8 @@ public class PostDTO {
         this.totalLikes = (long) post.getUsersLikes().size();
         this.totalCommentaries = (long) post.getCommentaries().size();
         this.createdData = post.getCreatedDate();
+        this.usersRepostList = post.getUsersReposts().stream().map(UserDTO::new).collect(Collectors.toSet());
         this.liked = liked;
+        this.repostedByMe = reposted;
     }
 }
