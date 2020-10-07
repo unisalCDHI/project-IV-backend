@@ -1,6 +1,5 @@
 package com.cdhi.projectivbackend.domain;
 
-import com.cdhi.projectivbackend.domain.enums.Avatar;
 import com.cdhi.projectivbackend.domain.enums.Profile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -26,7 +25,7 @@ public class User implements Serializable {
     @Column(unique = true)
     private String email;
     private Boolean enabled;
-    private Avatar avatar;
+    private String avatar;
 
     private Date created;
 
@@ -50,17 +49,23 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "usersLikes", cascade = CascadeType.DETACH)
     private Set<Post> postsLiked;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "usersReposts", cascade = CascadeType.DETACH)
     private Set<Post> reposts = new HashSet<>();
 
     @JsonIgnore
     @ManyToMany(mappedBy = "followers", cascade = CascadeType.DETACH)
-    private List<User> followingUsers = new ArrayList<>();
+    private Set<User> followingUsers = new HashSet<>();
 
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.DETACH)
     @JoinTable(name = "USER_FOLLOWS", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "follow_user_id"))
-    private List<User> followers = new ArrayList<>();
+    private Set<User> followers = new HashSet<>();
+
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.DETACH)
+    @JoinTable(name = "USER_TEAMS", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "team_id"))
+    private Set<Team> teams = new HashSet<>();
 
     public User() {
         int leftLimit = 48; // numeral '0'

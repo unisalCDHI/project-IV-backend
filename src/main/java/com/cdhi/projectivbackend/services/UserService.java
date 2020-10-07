@@ -2,7 +2,6 @@ package com.cdhi.projectivbackend.services;
 
 import com.cdhi.projectivbackend.domain.Post;
 import com.cdhi.projectivbackend.domain.User;
-import com.cdhi.projectivbackend.domain.enums.Avatar;
 import com.cdhi.projectivbackend.domain.enums.Profile;
 import com.cdhi.projectivbackend.dtos.NewUserDTO;
 import com.cdhi.projectivbackend.dtos.UserDTO;
@@ -76,7 +75,6 @@ public class UserService {
             newUserDTO.setPassword(CRYPTER.encode(newUserDTO.getPassword()));
             User userToCreate = toObject(newUserDTO);
             userToCreate.setUsername(newUserDTO.getUsername());
-            userToCreate.setAvatar(Avatar.A0);
 
             User user = repo.save(userToCreate);
             emailService.sendUserConfirmationHtmlEmail(user);
