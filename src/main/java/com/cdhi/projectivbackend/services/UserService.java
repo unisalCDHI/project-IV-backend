@@ -96,7 +96,7 @@ public class UserService {
         userToUpdate
                 .setName(userDTO.getName());
 //        userToUpdate.setUsername(userDTO.getUsername());
-//        userToUpdate.setAvatar(userDTO.getAvatar());
+        userToUpdate.setAvatar(userDTO.getAvatar());
         repo.save(userToUpdate);
         return findOne(userId);
     }
