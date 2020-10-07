@@ -25,6 +25,8 @@ public class User implements Serializable {
     @Column(unique = true)
     private String email;
     private Boolean enabled;
+
+    @Column(columnDefinition = "TEXT")
     private String avatar;
 
     private Date created;
