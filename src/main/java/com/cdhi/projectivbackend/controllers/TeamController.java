@@ -29,6 +29,12 @@ public class TeamController {
         return ResponseEntity.status(HttpStatus.OK).body(service.findAll());
     }
 
+    @ApiOperation(value = "Get Team By Id")
+    @GetMapping("{id}")
+    public ResponseEntity<TeamDTO> findOne(@PathVariable("id") Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.findOne(id));
+    }
+
     @ApiOperation(value = "Create Team")
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Valid NewTeamDTO newTeamDTO) {

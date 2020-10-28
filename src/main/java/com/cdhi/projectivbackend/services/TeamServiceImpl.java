@@ -41,8 +41,8 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamDTO findOne() {
-        return null;
+    public TeamDTO findOne(Integer id) {
+        return new TeamDTO(repo.findById(id).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um time com o id: " + id)));
     }
 
     @Override

@@ -15,7 +15,7 @@ public interface TeamService {
 
     List<TeamDTO> findAll();
 
-    TeamDTO findOne();
+    TeamDTO findOne(Integer id);
 
     TeamDTO edit(TeamDTO teamDTO, Integer id);
 
