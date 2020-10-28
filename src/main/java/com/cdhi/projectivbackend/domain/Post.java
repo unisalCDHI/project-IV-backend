@@ -1,22 +1,26 @@
 package com.cdhi.projectivbackend.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity(name = "POST")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Post implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private String title;
 
     @Column(columnDefinition = "TEXT")
     private String image;
@@ -31,7 +35,7 @@ public class Post implements Serializable {
     private LocalDateTime createdDate = LocalDateTime.now();
 
     @ManyToMany
-    @JoinTable(name = "USER_LIKES", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "post_id"))
+    @JoinTable(name = "USER_LIKES", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> usersLikes = new HashSet<>();
 
     private boolean commentary;
@@ -40,10 +44,11 @@ public class Post implements Serializable {
     private List<Post> commentaries = new ArrayList<>();
 
     @JsonIgnore
-    @ManyToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="parentPost")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "parentPost")
     private Post parentPost;
 
-    //TODO
-//    private List<User> repostUserList;
+    @ManyToMany
+    @JoinTable(name = "USER_REPOSTS", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> usersReposts = new HashSet<>();
 }

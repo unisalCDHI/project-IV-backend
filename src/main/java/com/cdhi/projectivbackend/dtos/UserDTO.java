@@ -20,6 +20,8 @@ public class UserDTO implements Serializable {
     @NotEmpty(message = "'Nome' é obrigatório")
     private String name;
 
+    private String avatar;
+
     public UserDTO() {
     }
 
@@ -27,5 +29,6 @@ public class UserDTO implements Serializable {
         this.id = user.getId();
         this.username = user.getUsername();
         this.name = user.getName();
+        this.avatar = user.getAvatar();
   }
 }
