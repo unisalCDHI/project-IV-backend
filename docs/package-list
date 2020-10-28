@@ -1,0 +1,12 @@
+com.cdhi.projectivbackend
+com.cdhi.projectivbackend.config
+com.cdhi.projectivbackend.controllers
+com.cdhi.projectivbackend.controllers.exceptions
+com.cdhi.projectivbackend.domain
+com.cdhi.projectivbackend.domain.enums
+com.cdhi.projectivbackend.dtos
+com.cdhi.projectivbackend.repositories
+com.cdhi.projectivbackend.security
+com.cdhi.projectivbackend.services
+com.cdhi.projectivbackend.services.exceptions
+com.cdhi.projectivbackend.services.jobs
