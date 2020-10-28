@@ -46,7 +46,7 @@ public class TeamServiceImpl implements TeamService {
         Team team = repo.findById(id).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um time com o id: " + id));
         if(team.getMembers().stream().noneMatch(u -> u.getId().equals(user.getId())))
             throw new ObjectNotFoundException("Não foi encontrado o seu usuário na lista de membros do time");
-        return new TeamDTO();
+        return new TeamDTO(team);
     }
 
     @Override
