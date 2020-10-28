@@ -1,11 +1,8 @@
 package com.cdhi.projectivbackend.controllers;
 
 import com.cdhi.projectivbackend.domain.Team;
-import com.cdhi.projectivbackend.domain.User;
 import com.cdhi.projectivbackend.dtos.NewTeamDTO;
-import com.cdhi.projectivbackend.dtos.NewUserDTO;
 import com.cdhi.projectivbackend.dtos.TeamDTO;
-import com.cdhi.projectivbackend.dtos.UserDTO;
 import com.cdhi.projectivbackend.services.TeamService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
