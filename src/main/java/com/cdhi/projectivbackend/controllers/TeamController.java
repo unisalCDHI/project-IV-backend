@@ -1,6 +1,5 @@
 package com.cdhi.projectivbackend.controllers;
 
-import com.cdhi.projectivbackend.domain.Team;
 import com.cdhi.projectivbackend.dtos.NewTeamDTO;
 import com.cdhi.projectivbackend.dtos.TeamDTO;
 import com.cdhi.projectivbackend.services.TeamService;
@@ -33,9 +32,41 @@ public class TeamController {
     @ApiOperation(value = "Create Team")
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Valid NewTeamDTO newTeamDTO) {
-        Team u = service.create(newTeamDTO);
+        TeamDTO u = service.create(newTeamDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(u.getId()).toUri();
         return ResponseEntity.created(uri).build();
+    }
+
+    @ApiOperation(value = "Edit Team")
+    @PutMapping("{id}")
+    public ResponseEntity<?> edit(@RequestBody @Valid TeamDTO teamDTO, @PathVariable("id") Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.edit(teamDTO, id));
+    }
+
+    @ApiOperation(value = "Delete Team")
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
+        service.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
+    @ApiOperation(value = "Add user in Team")
+    @PostMapping("{id}/add")
+    public ResponseEntity<?> add(@RequestBody Integer userId, @PathVariable("id") Integer teamId) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.addUserToTeam(userId, teamId));
+    }
+
+    @ApiOperation(value = "Remove user from Team")
+    @PostMapping("{id}/remove")
+    public ResponseEntity<?> remove(@RequestBody Integer userId, @PathVariable("id") Integer teamId) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.removeUserFromTeam(userId, teamId));
+    }
+
+    @ApiOperation(value = "Quit from Team")
+    @PostMapping("{id}/quit")
+    public ResponseEntity<?> quit(@PathVariable("id") Integer teamId) {
+        service.quitTeam(teamId);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

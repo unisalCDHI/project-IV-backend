@@ -22,12 +22,14 @@ public class TeamDTO {
     @NotEmpty(message = "'Nome' é obrigatório")
     private String name;
 
+    private UserDTO owner;
+
     private List<UserDTO> members;
 
     public TeamDTO(Team team) {
         this.id = team.getId();
         this.name = team.getName();
-        this.name = team.getName();
+        this.owner = new UserDTO(team.getOwner());
         this.members = team.getMembers().stream().map(UserDTO::new).collect(Collectors.toList());
     }
 
