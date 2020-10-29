@@ -14,7 +14,7 @@ import java.util.List;
 public interface MessageRepository extends JpaRepository<Message, Integer> {
 
     @Transactional(readOnly = true)
-    @Query(value = "SELECT * FROM MESSAGES m WHERE m.sender_id = :snd AND m.recipient_id = :rcp ORDER BY created_date ASC",
+    @Query(value = "SELECT * FROM MESSAGES m WHERE (m.sender_id = :snd AND m.recipient_id = :rcp) OR (m.recipient_id = :snd AND m.sender_id = :rcp) ORDER BY created_date ASC",
             nativeQuery = true)
     List<Message> findConversationBetween(@Param("snd") Integer sender_id, @Param("rcp") Integer recipient_id);
 }
