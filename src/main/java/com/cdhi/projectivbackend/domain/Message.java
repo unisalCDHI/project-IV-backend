@@ -31,4 +31,7 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "recipient_id")
     private User recipient;
+
+    private Boolean deleted = false;
+    private Boolean updated = false;
 }

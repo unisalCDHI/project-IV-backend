@@ -13,7 +13,11 @@ import java.util.List;
  */
 public interface MessageService {
 
-    Message send(NewMessageDTO newMessageDTO);
+    MessageDTO send(NewMessageDTO newMessageDTO);
 
     List<MessageDTO> getConversationWith(Integer userId);
+
+    void deleteMessage(Integer userId, Integer messageId);
+
+    MessageDTO update(Integer messageId, MessageDTO messageDTO);
 }

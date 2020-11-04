@@ -27,7 +27,7 @@ public class MessageController {
     @ApiOperation(value = "Send a message")
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Valid NewMessageDTO newMessageDTO) {
-        Message p = service.send(newMessageDTO);
+        MessageDTO p = service.send(newMessageDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(p.getId()).toUri();
         return ResponseEntity.created(uri).build();
@@ -37,5 +37,20 @@ public class MessageController {
     @GetMapping("{userId}")
     public ResponseEntity<List<MessageDTO>> findAll(@PathVariable("userId") Integer userId) {
         return ResponseEntity.status(HttpStatus.OK).body(service.getConversationWith(userId));
+    }
+
+    @ApiOperation(value = "Delete message between you and user")
+    @DeleteMapping("{userId}/{messageId}")
+    public ResponseEntity<?> delete(@PathVariable("userId") Integer userId, @PathVariable("messageId") Integer messageId) {
+        service.deleteMessage(userId, messageId);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
+    @ApiOperation(value = "Update message between you and user")
+    @PutMapping("{userId}")
+    @Deprecated
+    public ResponseEntity<MessageDTO> update(@PathVariable("userId") Integer userId, @RequestBody @Valid MessageDTO messageDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+//        return ResponseEntity.status(HttpStatus.OK).body(service.update(userId, messageDTO));
     }
 }
