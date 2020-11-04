@@ -69,6 +69,12 @@ public class User implements Serializable {
     @JoinTable(name = "USER_TEAMS", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "team_id"))
     private Set<Team> teams = new HashSet<>();
 
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> messagesReceived;
+
+    @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> messagesDelivered;
+
     public User() {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'

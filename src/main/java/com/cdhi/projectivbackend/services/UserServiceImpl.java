@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public List<UserDTO> findAll(String name) {
-        return repo.findDistinctByNameContainingIgnoreCase(name).stream().filter(User::getEnabled).map(UserDTO::new).collect(Collectors.toList());
+        return repo.findDistinctByNameContainingIgnoreCase(name).stream().filter(user -> user.getEnabled() && !user.getId().equals(getWebRequestUser().getId())).map(UserDTO::new).collect(Collectors.toList());
     }
 
     @Override

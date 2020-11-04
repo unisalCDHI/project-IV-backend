@@ -134,8 +134,8 @@ public class PostServiceImpl implements PostService {
                         p.getUsersReposts().stream().anyMatch(u -> u.getId().equals(user.getId()))
                 ))
                 .sorted((p1, p2) ->
-                        p1.getCreatedData().isAfter(p2.getCreatedData()) ? -1 :
-                                p1.getCreatedData().isAfter(p2.getCreatedData()) ? 1 : 0)
+                        p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? -1 :
+                                p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? 1 : 0)
                 .collect(Collectors.toList());
     }
 

@@ -14,6 +14,5 @@ public class NewTeamDTO {
     @NotEmpty(message = "'Nome' é obrigatório")
     private String name;
 
-    @NotEmpty(message = "O time deve conter pelo menos 1 membro (você)")
     private List<UserDTO> members;
 }

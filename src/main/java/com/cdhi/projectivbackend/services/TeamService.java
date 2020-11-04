@@ -15,5 +15,18 @@ public interface TeamService {
 
     List<TeamDTO> findAll();
 
-    Team create(NewTeamDTO newTeamDTO);
+    TeamDTO findOne(Integer id);
+
+    TeamDTO edit(TeamDTO teamDTO, Integer id);
+
+    TeamDTO create(NewTeamDTO newTeamDTO);
+
+    void delete(Integer id);
+
+    TeamDTO addUserToTeam(Integer userId, Integer teamId);
+
+    TeamDTO removeUserFromTeam(Integer userId, Integer teamId);
+
+    void quitTeam(Integer id);
+
 }

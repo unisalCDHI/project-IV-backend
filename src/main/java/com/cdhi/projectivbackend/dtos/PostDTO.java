@@ -19,7 +19,7 @@ public class PostDTO {
     private List<UserDTO> likes;
     private Long totalLikes;
     private Long totalCommentaries;
-    private LocalDateTime createdData;
+    private LocalDateTime createdDate;
     private boolean liked;
     private boolean repostedByMe;
     private Set<UserDTO> usersRepostList;
@@ -34,7 +34,7 @@ public class PostDTO {
         this.likes = post.getUsersLikes().stream().map(UserDTO::new).collect(Collectors.toList());
         this.totalLikes = (long) post.getUsersLikes().size();
         this.totalCommentaries = (long) post.getCommentaries().size();
-        this.createdData = post.getCreatedDate();
+        this.createdDate = post.getCreatedDate();
         this.usersRepostList = post.getUsersReposts().stream().map(UserDTO::new).collect(Collectors.toSet());
         this.liked = liked;
         this.repostedByMe = reposted;
