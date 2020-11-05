@@ -4,6 +4,7 @@ import com.cdhi.projectivbackend.domain.Post;
 import com.cdhi.projectivbackend.domain.User;
 import com.cdhi.projectivbackend.domain.enums.Profile;
 import com.cdhi.projectivbackend.dtos.NewUserDTO;
+import com.cdhi.projectivbackend.dtos.PostDTO;
 import com.cdhi.projectivbackend.dtos.UserDTO;
 import com.cdhi.projectivbackend.repositories.UserRepository;
 import com.cdhi.projectivbackend.security.UserSS;
@@ -163,10 +164,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<PostDTO> findPosts(Integer id) {
+        User user = repo.findById(id).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + id));
+        return user.getPosts().stream().map(p -> new PostDTO(
+                p,
+                p.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())),
+                p.getUsersReposts().stream().anyMatch(u -> u.getId().equals(user.getId()))
+        ))
+                .sorted((p1, p2) ->
+                        p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? -1 :
+                                p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? 1 : 0)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public User followUser(Integer userId) {
         User user = getWebRequestUser();
-        User followingUser = repo.findById(userId).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + userId));;
+        User followingUser = repo.findById(userId).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + userId));
 
         if(!followingUser.getEnabled())
             throw new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + userId);
