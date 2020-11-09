@@ -31,7 +31,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post createPost(NewPostDTO newPostDTO) {
 
-        if((newPostDTO.getImage() == null || newPostDTO.getImage().equals("")) && (newPostDTO.getBody() == null || newPostDTO.getBody().equals("")))
+        if ((newPostDTO.getImage() == null || newPostDTO.getImage().equals("")) && (newPostDTO.getBody() == null || newPostDTO.getBody().equals("")))
             throw new AuthorizationException("Você deve preencher o campo 'body' ou o campo 'image'");
 
         User user = userService.getWebRequestUser();
@@ -49,7 +49,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createCommentary(NewPostDTO newCommentaryDTO, Integer postId) {
-        if((newCommentaryDTO.getImage() == null || newCommentaryDTO.getImage().equals("")) && (newCommentaryDTO.getBody() == null || newCommentaryDTO.getBody().equals("")))
+        if ((newCommentaryDTO.getImage() == null || newCommentaryDTO.getImage().equals("")) && (newCommentaryDTO.getBody() == null || newCommentaryDTO.getBody().equals("")))
             throw new AuthorizationException("Você deve preencher o campo 'body' ou o campo 'image'");
 
         User user = userService.getWebRequestUser();
@@ -110,7 +110,9 @@ public class PostServiceImpl implements PostService {
         Post post = repo.findById(id).orElseThrow(() ->
                 new ObjectNotFoundException("Não foi encontrado o post com id: " + id));
         return post.getCommentaries().stream().map(comment -> new PostDTO(comment, comment.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())),
-                comment.getUsersReposts().stream().anyMatch(u -> u.getId().equals(user.getId())))).collect(Collectors.toList());
+                comment.getUsersReposts().stream().anyMatch(u -> u.getId().equals(user.getId())))).sorted((p1, p2) ->
+                p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? -1 :
+                        p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? 1 : 0).collect(Collectors.toList());
     }
 
     @Override
@@ -175,7 +177,7 @@ public class PostServiceImpl implements PostService {
         Post post = repo.findById(postId).orElseThrow(() ->
                 new ObjectNotFoundException("Não foi encontrado o post com id: " + postId));
 
-        if(post.getOwner().getId().equals(user.getId())) {
+        if (post.getOwner().getId().equals(user.getId())) {
             repo.deleteById(post.getId());
         } else {
             throw new AuthorizationException("Você não pode excluir um post que não é seu");
