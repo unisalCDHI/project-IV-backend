@@ -6,6 +6,7 @@ import com.cdhi.projectivbackend.dtos.NewPostDTO;
 import com.cdhi.projectivbackend.dtos.PostDTO;
 import com.cdhi.projectivbackend.repositories.PostRepository;
 import com.cdhi.projectivbackend.repositories.UserRepository;
+import com.cdhi.projectivbackend.services.exceptions.AuthorizationException;
 import com.cdhi.projectivbackend.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createPost(NewPostDTO newPostDTO) {
+
+        if((newPostDTO.getImage() == null || newPostDTO.getImage().equals("")) && (newPostDTO.getBody() == null || newPostDTO.getBody().equals("")))
+            throw new AuthorizationException("Você deve preencher o campo 'body' ou o campo 'image'");
+
         User user = userService.getWebRequestUser();
 
         Post post = new Post();
@@ -44,6 +49,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createCommentary(NewPostDTO newCommentaryDTO, Integer postId) {
+        if((newCommentaryDTO.getImage() == null || newCommentaryDTO.getImage().equals("")) && (newCommentaryDTO.getBody() == null || newCommentaryDTO.getBody().equals("")))
+            throw new AuthorizationException("Você deve preencher o campo 'body' ou o campo 'image'");
+
         User user = userService.getWebRequestUser();
         Post parentPost = repo.findById(postId).orElseThrow(() ->
                 new ObjectNotFoundException("Não foi encontrado o post com id: " + postId));
