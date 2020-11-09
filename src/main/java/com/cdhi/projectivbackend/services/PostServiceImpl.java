@@ -65,8 +65,8 @@ public class PostServiceImpl implements PostService {
         parentPost.getCommentaries().add(commentary);
         commentary.setParentPost(parentPost);
 
-        repo.save(parentPost);
-        Post savedCommentary = repo.save(commentary);
+//        repo.saveAndFlush(parentPost);
+        Post savedCommentary = repo.saveAndFlush(commentary);
 
         userService.addPost(savedCommentary, user);
         return savedCommentary;
@@ -144,7 +144,7 @@ public class PostServiceImpl implements PostService {
                 .sorted((p1, p2) ->
                         p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? -1 :
                                 p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? 1 : 0)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()).stream().filter(p -> !p.isCommentary()).collect(Collectors.toList());
     }
 
     @Override
@@ -167,6 +167,19 @@ public class PostServiceImpl implements PostService {
         return posts.stream()
                 .map(post -> new PostDTO(post, post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())), true))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void delete(Integer postId) {
+        User user = userService.getWebRequestUser();
+        Post post = repo.findById(postId).orElseThrow(() ->
+                new ObjectNotFoundException("Não foi encontrado o post com id: " + postId));
+
+        if(post.getOwner().getId().equals(user.getId())) {
+            repo.deleteById(post.getId());
+        } else {
+            throw new AuthorizationException("Você não pode excluir um post que não é seu");
+        }
     }
 
 }

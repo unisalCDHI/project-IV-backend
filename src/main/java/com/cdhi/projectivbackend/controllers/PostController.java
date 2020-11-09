@@ -78,4 +78,11 @@ public class PostController {
     public ResponseEntity<List<?>> getReposts() {
         return ResponseEntity.status(HttpStatus.OK).body( service.getReposts());
     }
+
+    @ApiOperation(value = "Delete post")
+    @DeleteMapping(value = "{id}")
+    public ResponseEntity<?> delete(@PathVariable Integer id) {
+        service.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
 }
