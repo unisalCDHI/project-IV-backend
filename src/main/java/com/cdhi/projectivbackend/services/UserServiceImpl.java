@@ -55,10 +55,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User findOne(Integer id) {
-        UserSS user = UserServiceImpl.authenticated();
-        if (user == null || !user.hasRole(Profile.ADMIN) && !id.equals(user.getId())) {
-            throw new AuthorizationException("Você precisa estar logado no usuário que deseja recuperar as informações ou em uma conta ADMIN");
-        }
+//        UserSS user = UserServiceImpl.authenticated();
+//        if (user == null || !user.hasRole(Profile.ADMIN) && !id.equals(user.getId())) {
+//            throw new AuthorizationException("Você precisa estar logado no usuário que deseja recuperar as informações ou em uma conta ADMIN");
+//        }
         return repo.findById(id).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + id));
     }
 
