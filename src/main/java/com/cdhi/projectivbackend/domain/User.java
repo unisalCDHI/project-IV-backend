@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,7 @@ public class User implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String avatar;
 
-    private Date created;
+    private LocalDateTime createdDate = LocalDateTime.now();
 
     @JsonIgnore
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -92,7 +93,6 @@ public class User implements Serializable {
                         .toString()
         );
         addProfile(Profile.USER);
-        this.created = new Date(System.currentTimeMillis() - 10800000);
     }
 
     public User(String name, String email, String password) {
@@ -113,7 +113,6 @@ public class User implements Serializable {
                         .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                         .toString()
         );
-        this.created = new Date(System.currentTimeMillis() - 10800000);
     }
 
     public Set<Profile> getProfiles() {

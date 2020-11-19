@@ -37,7 +37,7 @@ public class ConfirmEmailTimeOut {
 
         for (User user : usersDisabled) {
             if (!user.getEnabled() &&
-                    (Date.from(ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("America/Sao_Paulo")).toInstant()).getTime() - user.getCreated().getTime()) >= accountExpiration) { //'enabled = false' and past '24' hours
+                    (Date.from(ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("America/Sao_Paulo")).toInstant()).getTime() - Date.from(user.getCreatedDate().atZone(ZoneId.systemDefault()).toInstant()).getTime()) >= accountExpiration) { //'enabled = false' and past '24' hours
                 timedOutUsers.add(user);
                 count++;
             }
