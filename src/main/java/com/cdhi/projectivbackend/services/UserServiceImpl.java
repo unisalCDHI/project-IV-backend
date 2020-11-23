@@ -63,6 +63,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO userToDTO(User user) {
+        return new UserDTO(user, isFollowedByYou(user.getId()), isFollowingYou(user.getId()));
+    }
+
+
+    @Override
     @Transactional
     public List<UserDTO> findAll(String name) {
         return repo.findDistinctByNameContainingIgnoreCase(name).stream().filter(user -> user.getEnabled() && !user.getId().equals(getWebRequestUser().getId())).map(UserDTO::new).collect(Collectors.toList());
@@ -175,6 +181,18 @@ public class UserServiceImpl implements UserService {
                         p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? -1 :
                                 p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? 1 : 0)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isFollowingYou(Integer userId) {
+        User you = getWebRequestUser();
+        return you.getFollowers().stream().anyMatch(u -> u.getId().equals(userId));
+    }
+
+    @Override
+    public boolean isFollowedByYou(Integer userId) {
+        User you = getWebRequestUser();
+        return you.getFollowingUsers().stream().anyMatch(u -> u.getId().equals(userId));
     }
 
     @Override

@@ -31,8 +31,8 @@ public class UserController {
 
     @ApiOperation(value = "Get User by id")
     @GetMapping(value = "/{id}")
-    public ResponseEntity<User> findOne(@PathVariable Integer id) {
-        return ResponseEntity.status(HttpStatus.OK).body(service.findOne(id));
+    public ResponseEntity<UserDTO> findOne(@PathVariable Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.userToDTO(service.findOne(id)));
     }
 
     @ApiOperation(value = "Get Users")

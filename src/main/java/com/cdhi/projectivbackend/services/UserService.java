@@ -20,6 +20,8 @@ public interface UserService {
 
     User findOne(Integer id);
 
+    UserDTO userToDTO(User user);
+
     List<UserDTO> findAll(String name);
 
     List<UserDTO> findAllFollowingUsers();
@@ -45,4 +47,8 @@ public interface UserService {
     User addPost(Post post, Integer userId);
 
     List<PostDTO> findPosts(Integer id);
+
+    boolean isFollowingYou(Integer userId);
+
+    boolean isFollowedByYou(Integer userId);
 }
