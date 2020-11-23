@@ -1,19 +1,17 @@
 package com.cdhi.projectivbackend.dtos;
 
 import com.cdhi.projectivbackend.domain.User;
-import com.cdhi.projectivbackend.services.UserService;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class UserDTO implements Serializable {
-
-    @Autowired
-    private UserService userService;
 
     private Integer id;
 
@@ -31,15 +29,19 @@ public class UserDTO implements Serializable {
 
     private boolean follower;
 
+    private List<UserDTO> followers = new ArrayList<>();
+
+    private List<UserDTO> followings = new ArrayList<>();
+
     public UserDTO() {
     }
 
-  public UserDTO(User user) {
+    public UserDTO(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.name = user.getName();
         this.avatar = user.getAvatar();
-  }
+    }
 
     public UserDTO(User user, boolean followedByYou, boolean followingYou) {
         this.id = user.getId();
@@ -48,5 +50,7 @@ public class UserDTO implements Serializable {
         this.avatar = user.getAvatar();
         this.followed = followedByYou;
         this.follower = followingYou;
+        this.followers = user.getFollowers().stream().map(UserDTO::new).collect(Collectors.toList());
+        this.followings = user.getFollowingUsers().stream().map(UserDTO::new).collect(Collectors.toList());
     }
 }
