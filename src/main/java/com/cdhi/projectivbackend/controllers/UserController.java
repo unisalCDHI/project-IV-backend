@@ -2,6 +2,7 @@ package com.cdhi.projectivbackend.controllers;
 
 import com.cdhi.projectivbackend.domain.User;
 import com.cdhi.projectivbackend.dtos.NewUserDTO;
+import com.cdhi.projectivbackend.dtos.PostDTO;
 import com.cdhi.projectivbackend.dtos.UserDTO;
 import com.cdhi.projectivbackend.services.UserService;
 import io.swagger.annotations.Api;
@@ -30,14 +31,20 @@ public class UserController {
 
     @ApiOperation(value = "Get User by id")
     @GetMapping(value = "/{id}")
-    public ResponseEntity<User> getById(@PathVariable Integer id) {
-        return ResponseEntity.status(HttpStatus.OK).body(service.findOne(id));
+    public ResponseEntity<UserDTO> findOne(@PathVariable Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.userToDTO(service.findOne(id)));
     }
 
     @ApiOperation(value = "Get Users")
     @GetMapping
     public ResponseEntity<List<UserDTO>> findAll(@RequestParam(value = "name", defaultValue = "") String name) {
         return ResponseEntity.status(HttpStatus.OK).body(service.findAll(name));
+    }
+
+    @ApiOperation(value = "Get posts from user")
+    @GetMapping(value = "/posts/{id}")
+    public ResponseEntity<List<PostDTO>> findPosts(@PathVariable Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.findPosts(id));
     }
 
     @ApiOperation(value = "Get Following Users")

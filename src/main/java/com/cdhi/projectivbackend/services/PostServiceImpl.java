@@ -6,6 +6,7 @@ import com.cdhi.projectivbackend.dtos.NewPostDTO;
 import com.cdhi.projectivbackend.dtos.PostDTO;
 import com.cdhi.projectivbackend.repositories.PostRepository;
 import com.cdhi.projectivbackend.repositories.UserRepository;
+import com.cdhi.projectivbackend.services.exceptions.AuthorizationException;
 import com.cdhi.projectivbackend.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createPost(NewPostDTO newPostDTO) {
+
+        if ((newPostDTO.getImage() == null || newPostDTO.getImage().equals("")) && (newPostDTO.getBody() == null || newPostDTO.getBody().equals("")))
+            throw new AuthorizationException("Você deve preencher o campo 'body' ou o campo 'image'");
+
         User user = userService.getWebRequestUser();
 
         Post post = new Post();
@@ -44,6 +49,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createCommentary(NewPostDTO newCommentaryDTO, Integer postId) {
+        if ((newCommentaryDTO.getImage() == null || newCommentaryDTO.getImage().equals("")) && (newCommentaryDTO.getBody() == null || newCommentaryDTO.getBody().equals("")))
+            throw new AuthorizationException("Você deve preencher o campo 'body' ou o campo 'image'");
+
         User user = userService.getWebRequestUser();
         Post parentPost = repo.findById(postId).orElseThrow(() ->
                 new ObjectNotFoundException("Não foi encontrado o post com id: " + postId));
@@ -57,8 +65,8 @@ public class PostServiceImpl implements PostService {
         parentPost.getCommentaries().add(commentary);
         commentary.setParentPost(parentPost);
 
-        repo.save(parentPost);
-        Post savedCommentary = repo.save(commentary);
+//        repo.saveAndFlush(parentPost);
+        Post savedCommentary = repo.saveAndFlush(commentary);
 
         userService.addPost(savedCommentary, user);
         return savedCommentary;
@@ -102,7 +110,9 @@ public class PostServiceImpl implements PostService {
         Post post = repo.findById(id).orElseThrow(() ->
                 new ObjectNotFoundException("Não foi encontrado o post com id: " + id));
         return post.getCommentaries().stream().map(comment -> new PostDTO(comment, comment.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())),
-                comment.getUsersReposts().stream().anyMatch(u -> u.getId().equals(user.getId())))).collect(Collectors.toList());
+                comment.getUsersReposts().stream().anyMatch(u -> u.getId().equals(user.getId())))).sorted((p1, p2) ->
+                p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? -1 :
+                        p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? 1 : 0).collect(Collectors.toList());
     }
 
     @Override
@@ -136,7 +146,7 @@ public class PostServiceImpl implements PostService {
                 .sorted((p1, p2) ->
                         p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? -1 :
                                 p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? 1 : 0)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()).stream().filter(p -> !p.isCommentary()).collect(Collectors.toList());
     }
 
     @Override
@@ -159,6 +169,19 @@ public class PostServiceImpl implements PostService {
         return posts.stream()
                 .map(post -> new PostDTO(post, post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())), true))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void delete(Integer postId) {
+        User user = userService.getWebRequestUser();
+        Post post = repo.findById(postId).orElseThrow(() ->
+                new ObjectNotFoundException("Não foi encontrado o post com id: " + postId));
+
+        if (post.getOwner().getId().equals(user.getId())) {
+            repo.deleteById(post.getId());
+        } else {
+            throw new AuthorizationException("Você não pode excluir um post que não é seu");
+        }
     }
 
 }

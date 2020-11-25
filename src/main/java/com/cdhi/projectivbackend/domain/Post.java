@@ -44,7 +44,7 @@ public class Post implements Serializable {
     private List<Post> commentaries = new ArrayList<>();
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "parentPost")
     private Post parentPost;
 

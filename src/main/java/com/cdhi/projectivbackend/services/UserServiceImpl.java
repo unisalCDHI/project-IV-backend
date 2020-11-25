@@ -4,6 +4,7 @@ import com.cdhi.projectivbackend.domain.Post;
 import com.cdhi.projectivbackend.domain.User;
 import com.cdhi.projectivbackend.domain.enums.Profile;
 import com.cdhi.projectivbackend.dtos.NewUserDTO;
+import com.cdhi.projectivbackend.dtos.PostDTO;
 import com.cdhi.projectivbackend.dtos.UserDTO;
 import com.cdhi.projectivbackend.repositories.UserRepository;
 import com.cdhi.projectivbackend.security.UserSS;
@@ -54,12 +55,18 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User findOne(Integer id) {
-        UserSS user = UserServiceImpl.authenticated();
-        if (user == null || !user.hasRole(Profile.ADMIN) && !id.equals(user.getId())) {
-            throw new AuthorizationException("Você precisa estar logado no usuário que deseja recuperar as informações ou em uma conta ADMIN");
-        }
+//        UserSS user = UserServiceImpl.authenticated();
+//        if (user == null || !user.hasRole(Profile.ADMIN) && !id.equals(user.getId())) {
+//            throw new AuthorizationException("Você precisa estar logado no usuário que deseja recuperar as informações ou em uma conta ADMIN");
+//        }
         return repo.findById(id).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + id));
     }
+
+    @Override
+    public UserDTO userToDTO(User user) {
+        return new UserDTO(user, isFollowedByYou(user.getId()), isFollowingYou(user.getId()));
+    }
+
 
     @Override
     @Transactional
@@ -163,10 +170,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<PostDTO> findPosts(Integer id) {
+        User user = repo.findById(id).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + id));
+        return user.getPosts().stream().map(p -> new PostDTO(
+                p,
+                p.getUsersLikes().stream().anyMatch(u -> u.getId().equals(user.getId())),
+                p.getUsersReposts().stream().anyMatch(u -> u.getId().equals(user.getId()))
+        ))
+                .sorted((p1, p2) ->
+                        p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? -1 :
+                                p1.getCreatedDate().isAfter(p2.getCreatedDate()) ? 1 : 0)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isFollowingYou(Integer userId) {
+        User you = getWebRequestUser();
+        return you.getFollowers().stream().anyMatch(u -> u.getId().equals(userId));
+    }
+
+    @Override
+    public boolean isFollowedByYou(Integer userId) {
+        User you = getWebRequestUser();
+        return you.getFollowingUsers().stream().anyMatch(u -> u.getId().equals(userId));
+    }
+
+    @Override
     @Transactional
     public User followUser(Integer userId) {
         User user = getWebRequestUser();
-        User followingUser = repo.findById(userId).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + userId));;
+        User followingUser = repo.findById(userId).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + userId));
 
         if(!followingUser.getEnabled())
             throw new ObjectNotFoundException("Não foi encontrado um usuário com o id: " + userId);

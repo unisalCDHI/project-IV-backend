@@ -81,4 +81,6 @@ public interface PostService {
      * @see PostDTO
      */
     List<PostDTO> getReposts();
+
+    void delete(Integer postId);
 }

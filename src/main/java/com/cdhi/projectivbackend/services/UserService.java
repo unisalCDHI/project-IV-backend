@@ -3,6 +3,7 @@ package com.cdhi.projectivbackend.services;
 import com.cdhi.projectivbackend.domain.Post;
 import com.cdhi.projectivbackend.domain.User;
 import com.cdhi.projectivbackend.dtos.NewUserDTO;
+import com.cdhi.projectivbackend.dtos.PostDTO;
 import com.cdhi.projectivbackend.dtos.UserDTO;
 import org.springframework.data.domain.Page;
 
@@ -18,6 +19,8 @@ public interface UserService {
     User getWebRequestUser();
 
     User findOne(Integer id);
+
+    UserDTO userToDTO(User user);
 
     List<UserDTO> findAll(String name);
 
@@ -42,4 +45,10 @@ public interface UserService {
     User addPost(Post post, User user);
 
     User addPost(Post post, Integer userId);
+
+    List<PostDTO> findPosts(Integer id);
+
+    boolean isFollowingYou(Integer userId);
+
+    boolean isFollowedByYou(Integer userId);
 }
