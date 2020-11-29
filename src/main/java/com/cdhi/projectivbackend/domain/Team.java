@@ -1,9 +1,12 @@
 package com.cdhi.projectivbackend.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "TEAM")
@@ -17,6 +20,9 @@ public class Team {
     @Column(name = "_name")
     private String name;
 
+    @Column(columnDefinition = "TEXT")
+    private String about;
+
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
@@ -24,4 +30,7 @@ public class Team {
     @ManyToMany(mappedBy = "teams", cascade = CascadeType.DETACH)
     private Set<User> members = new HashSet<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
 }

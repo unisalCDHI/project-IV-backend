@@ -4,6 +4,7 @@ import com.cdhi.projectivbackend.security.JWTAuthenticationFilter;
 import com.cdhi.projectivbackend.security.JWTAuthorizationFilter;
 import com.cdhi.projectivbackend.security.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -30,6 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private Environment env;
 
+    @Qualifier("userDetailsServiceImpl")
     @Autowired
     private UserDetailsService userDetailsService;
 

@@ -24,7 +24,6 @@ public class PostDTO {
     private boolean repostedByMe;
     private Set<UserDTO> usersRepostList;
 
-
     public PostDTO(Post post, boolean liked, boolean reposted) {
         this.id = post.getId();
         this.body = post.getBody();
