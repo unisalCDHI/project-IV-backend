@@ -17,6 +17,8 @@ public class Team {
     @Column(name = "_name")
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
     private User owner;
 
     @ManyToMany(mappedBy = "teams", cascade = CascadeType.DETACH)
