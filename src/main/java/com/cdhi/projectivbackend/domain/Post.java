@@ -45,10 +45,14 @@ public class Post implements Serializable {
 
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "parentPost")
+    @JoinColumn(name = "parent_post")
     private Post parentPost;
 
     @ManyToMany
     @JoinTable(name = "USER_REPOSTS", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> usersReposts = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
 }

@@ -1,7 +1,6 @@
 package com.cdhi.projectivbackend.dtos;
 
 import com.cdhi.projectivbackend.domain.Team;
-import com.cdhi.projectivbackend.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,11 +25,18 @@ public class TeamDTO {
 
     private List<UserDTO> members;
 
-    public TeamDTO(Team team) {
+    private String about;
+
+    private List<PostDTO> posts;
+
+    public TeamDTO(Team team, Integer currentUserId) {
         this.id = team.getId();
         this.name = team.getName();
         this.owner = new UserDTO(team.getOwner());
         this.members = team.getMembers().stream().map(UserDTO::new).collect(Collectors.toList());
+        this.about = team.getAbout();
+        this.posts = team.getPosts().stream().map(post -> new PostDTO(post, post.getUsersLikes().stream().anyMatch(u -> u.getId().equals(currentUserId)),
+                post.getUsersReposts().stream().anyMatch(u -> u.getId().equals(currentUserId)))).collect(Collectors.toList());
     }
 
 }

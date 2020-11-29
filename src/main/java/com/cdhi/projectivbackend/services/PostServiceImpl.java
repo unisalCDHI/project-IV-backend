@@ -118,13 +118,13 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostDTO> findAll() {
         User user = userService.getWebRequestUser();
-        List<Post> userPosts = repo.findAllByOwner_id(user.getId());
+        List<Post> userPosts = repo.findAllByOwner_id(user.getId()).stream().filter(post -> post.getTeam() == null).collect(Collectors.toList());
         List<Post> followingUsersPosts = new ArrayList<>();
         List<Post> repostsByFollowings = new ArrayList<>();
 
         for (User u : user.getFollowingUsers()) {
-            followingUsersPosts.addAll(repo.findAllByOwner_id(u.getId()));
-            repostsByFollowings.addAll(u.getReposts());
+            followingUsersPosts.addAll(repo.findAllByOwner_id(u.getId()).stream().filter(post -> post.getTeam() == null).collect(Collectors.toList()));
+            repostsByFollowings.addAll(u.getReposts().stream().filter(post -> post.getTeam() == null).collect(Collectors.toList()));
         }
 
         List<Post> posts = new ArrayList<>();

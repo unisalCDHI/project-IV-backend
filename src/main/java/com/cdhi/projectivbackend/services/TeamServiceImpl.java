@@ -37,16 +37,16 @@ public class TeamServiceImpl implements TeamService {
     @Transactional
     public List<TeamDTO> findAll() {
         User user = userService.getWebRequestUser();
-        return user.getTeams().stream().map(TeamDTO::new).collect(Collectors.toList());
+        return user.getTeams().stream().map(team -> new TeamDTO(team, user.getId())).collect(Collectors.toList());
     }
 
     @Override
     public TeamDTO findOne(Integer id) {
         User user = userService.getWebRequestUser();
         Team team = repo.findById(id).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um time com o id: " + id));
-        if(team.getMembers().stream().noneMatch(u -> u.getId().equals(user.getId())))
+        if (team.getMembers().stream().noneMatch(u -> u.getId().equals(user.getId())))
             throw new ObjectNotFoundException("Não foi encontrado o seu usuário na lista de membros do time");
-        return new TeamDTO(team);
+        return new TeamDTO(team, user.getId());
     }
 
     @Override
@@ -57,6 +57,7 @@ public class TeamServiceImpl implements TeamService {
 
         teamToCreate.setOwner(requestUser);
         teamToCreate.setName(newTeamDTO.getName());
+        teamToCreate.setAbout(newTeamDTO.getAbout());
         teamToCreate.setMembers(new HashSet<>(userRepository.findByIdIn(newTeamDTO.getMembers().stream().map(UserDTO::getId).collect(Collectors.toList()))));
         teamToCreate.getMembers().add(requestUser);
 
@@ -67,7 +68,7 @@ public class TeamServiceImpl implements TeamService {
             u.getTeams().add(teamToCreate);
             userRepository.save(u);
         }
-        return new TeamDTO(team);
+        return new TeamDTO(team, requestUser.getId());
     }
 
     @Override
@@ -81,7 +82,8 @@ public class TeamServiceImpl implements TeamService {
             throw new ObjectNotFoundException("Não foi possível editar as informações do time (você não é o líder do time");
         }
         team.setName(teamDTO.getName());
-        return new TeamDTO(repo.save(team));
+        team.setAbout(teamDTO.getAbout());
+        return new TeamDTO(repo.save(team), requestUser.getId());
     }
 
     @Override
@@ -106,7 +108,7 @@ public class TeamServiceImpl implements TeamService {
     public TeamDTO addUserToTeam(Integer userId, Integer teamId) {
         User requestUser = userService.getWebRequestUser();
 
-        if(userId.equals(requestUser.getId()))
+        if (userId.equals(requestUser.getId()))
             throw new AuthorizationException("Você não pode realizar essa operação com o usuário logado");
 
         Team team = repo.findById(teamId).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um time com o id: " + teamId));
@@ -118,7 +120,7 @@ public class TeamServiceImpl implements TeamService {
             else {
                 team.getMembers().add(user);
                 user.getTeams().add(team);
-                TeamDTO teamDTO = new TeamDTO(repo.save(team));
+                TeamDTO teamDTO = new TeamDTO(repo.save(team), requestUser.getId());
                 userRepository.save(user);
                 log.info("User {} added in team {}", user.getId().toString(), team.getId().toString());
                 return teamDTO;
@@ -131,7 +133,7 @@ public class TeamServiceImpl implements TeamService {
     public TeamDTO removeUserFromTeam(Integer userId, Integer teamId) {
         User requestUser = userService.getWebRequestUser();
 
-        if(userId.equals(requestUser.getId()))
+        if (userId.equals(requestUser.getId()))
             throw new AuthorizationException("Você não pode realizar essa operação com o usuário logado");
 
         Team team = repo.findById(teamId).orElseThrow(() -> new ObjectNotFoundException("Não foi encontrado um time com o id: " + teamId));
@@ -143,7 +145,7 @@ public class TeamServiceImpl implements TeamService {
             else {
                 team.getMembers().removeIf(u -> u.getId().equals(user.getId()));
                 user.getTeams().removeIf(t -> t.getId().equals(team.getId()));
-                TeamDTO teamDTO = new TeamDTO(repo.save(team));
+                TeamDTO teamDTO = new TeamDTO(repo.save(team), requestUser.getId());
                 userRepository.save(user);
                 log.info("User {} removed from team {}", user.getId().toString(), team.getId().toString());
                 return teamDTO;

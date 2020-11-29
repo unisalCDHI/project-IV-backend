@@ -78,6 +78,10 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messagesDelivered;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Team> teamsOwned = new HashSet<>();
+
     public User() {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'
